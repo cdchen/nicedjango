@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from django.db.models.fields import CharField
 from django_extensions.db.fields import UUIDField
