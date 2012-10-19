@@ -24,6 +24,16 @@ class ShortUUIDField(UUIDField):
 
 
 class HandlerField(CharField):
+    '''
+    儲存 Handler 資訊的欄位。
+
+    用法範例：
+
+    >>> class MyModel(models.Model):
+    >>>    handler = HandlerField(factory_cls=HandlerFactory)
+    >>>
+
+    '''
 
     def __init__(self, *args, **kwargs):
         factory_cls = kwargs.pop('factory_cls', None)
