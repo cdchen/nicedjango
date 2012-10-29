@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from django.db.models.fields import CharField
+from django.conf import settings
+from django.db.models.fields import CharField, NOT_PROVIDED
 from django.utils.functional import curry
 from django_extensions.db.fields import UUIDField
 import shortuuid
@@ -72,5 +73,21 @@ def _create_FIELD_handler(self, field, *args, **kwargs):
     return factory_cls.create_handler(
         value, *args, **kwargs
     )
+
+##
+## LanguageField
+##
+
+
+class LanguageField(CharField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({
+            'max_length': 7,
+            'choices': settings.LANGUAGES,
+            'default': settings.LANGUAGE_CODE,
+        })
+        super(CharField, self).__init__(*args, **kwargs)
+
 
 # End of file.
