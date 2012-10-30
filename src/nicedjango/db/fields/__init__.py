@@ -57,6 +57,15 @@ class HandlerField(CharField):
             curry(_create_FIELD_handler, field=self),
         )
 
+    def south_field_triple(self):
+        "Returns a suitable description of this field for South."
+        # We'll just introspect the _actual_ field.
+        from south.modelsinspector import introspector
+        field_class = "django.db.models.fields.CharField"
+        args, kwargs = introspector(self)
+        # That's our definition!
+        return (field_class, args, kwargs)
+
 
 def _create_FIELD_handler(self, field, *args, **kwargs):
     '''
@@ -89,5 +98,13 @@ class LanguageField(CharField):
         })
         super(CharField, self).__init__(*args, **kwargs)
 
+    def south_field_triple(self):
+        "Returns a suitable description of this field for South."
+        # We'll just introspect the _actual_ field.
+        from south.modelsinspector import introspector
+        field_class = "django.db.models.fields.CharField"
+        args, kwargs = introspector(self)
+        # That's our definition!
+        return (field_class, args, kwargs)
 
 # End of file.
