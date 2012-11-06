@@ -41,6 +41,17 @@ class ShortUUIDField(UUIDField):
             return ShortUUID(shortuuid.decode(value).hex)
         return value
 
+    def contribute_to_class(self, cls, name):
+        if self.primary_key == True:
+            assert not cls._meta.has_auto_field, \
+                "A model can't have more than one AutoField: %s %s %s; have %s" \
+                % (self, cls, name, cls._meta.auto_field)
+            super(UUIDField, self).contribute_to_class(cls, name)
+            cls._meta.has_auto_field = True
+            cls._meta.auto_field = self
+        else:
+            super(UUIDField, self).contribute_to_class(cls, name)
+
 
 class HandlerField(CharField):
     '''
