@@ -40,6 +40,7 @@ setup(
     install_requires=[
         # -*- Extra requirements: -*-
         'django',
+        'django-uuidfield',
     ] + django_extra_packages,
     setup_requires=[
         'sphinx',

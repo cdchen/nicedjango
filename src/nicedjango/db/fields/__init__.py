@@ -2,9 +2,21 @@
 
 from django.conf import settings
 from django.db.models.fields import CharField, NOT_PROVIDED
+from django.db.models.fields.subclassing import SubfieldBase
 from django.utils.functional import curry
-from django_extensions.db.fields import UUIDField
+from uuidfield.fields import UUIDField, StringUUID
 import shortuuid
+
+#from django_extensions.db.fields import UUIDField
+
+
+class ShortUUID(StringUUID):
+
+    def __unicode__(self):
+        return unicode(self.__str__())
+
+    def __str__(self):
+        return shortuuid.encode(self)
 
 
 class ShortUUIDField(UUIDField):
@@ -12,15 +24,21 @@ class ShortUUIDField(UUIDField):
     用來產生適合 HTTP 使用的 UUID 欄位。
     '''
 
+    __metaclass__ = SubfieldBase
+
     def pre_save(self, model_instance, add):
-        value = CharField.pre_save(self, model_instance, add)
-        if self.auto and add and value is None:
-            value = shortuuid.encode(self.create_uuid())
+        value = getattr(model_instance, self.attname, None)
+        if self.auto and add and not value:
+            uuid = self._create_uuid()
+            value = shortuuid.encode(uuid)
             setattr(model_instance, self.attname, value)
-        else:
-            if self.auto and not value:
-                value = shortuuid.encode(self.create_uuid())
-                setattr(model_instance, self.attname, value)
+        return value
+
+    def to_python(self, value):
+        if not value:
+            return None
+        if isinstance(value, basestring):
+            return ShortUUID(shortuuid.decode(value).hex)
         return value
 
 
