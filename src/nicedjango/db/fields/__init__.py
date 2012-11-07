@@ -22,9 +22,29 @@ class ShortUUID(StringUUID):
 class ShortUUIDField(UUIDField):
     '''
     用來產生適合 HTTP 使用的 UUID 欄位。
+
+    注意事項：
+
+    若需要搭配 django.contrib.admin 的 template 時，必須將
+    templates/admin/edit_inline/*.html 的：
+
+        {% if inline_admin_form.has_auto_field %}
+            {{ inline_admin_form.pk_field.field }}
+        {% endif %}
+
+    改為：
+
+        {% if inline_admin_form.pk_field %}
+            {{ inline_admin_form.pk_field.field }}
+        {% endif %}
+
+    否則將會丟出 MultiValueDictKeyError 的錯誤。
     '''
 
     __metaclass__ = SubfieldBase
+
+    def get_internal_type(self):
+        return 'CharField'
 
     def pre_save(self, model_instance, add):
         value = getattr(model_instance, self.attname, None)
@@ -41,16 +61,16 @@ class ShortUUIDField(UUIDField):
             return ShortUUID(shortuuid.decode(value).hex)
         return value
 
-    def contribute_to_class(self, cls, name):
-        if self.primary_key == True:
-            assert not cls._meta.has_auto_field, \
-                "A model can't have more than one AutoField: %s %s %s; have %s" \
-                % (self, cls, name, cls._meta.auto_field)
-            super(UUIDField, self).contribute_to_class(cls, name)
-            cls._meta.has_auto_field = True
-            cls._meta.auto_field = self
-        else:
-            super(UUIDField, self).contribute_to_class(cls, name)
+#    def contribute_to_class(self, cls, name):
+#        if self.primary_key:
+#            assert not cls._meta.has_auto_field, \
+#              "A model can't have more than one AutoField: %s %s %s; have %s" % \
+#               (self, cls, name, cls._meta.auto_field)
+#            super(ShortUUIDField, self).contribute_to_class(cls, name)
+#            cls._meta.has_auto_field = True
+#            cls._meta.auto_field = self
+#        else:
+#            super(ShortUUIDField, self).contribute_to_class(cls, name)
 
 
 class HandlerField(CharField):
