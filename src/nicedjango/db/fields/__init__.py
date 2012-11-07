@@ -4,8 +4,12 @@ from django.conf import settings
 from django.db.models.fields import CharField, NOT_PROVIDED
 from django.db.models.fields.subclassing import SubfieldBase
 from django.utils.functional import curry
-from uuidfield.fields import UUIDField, StringUUID
+from django_extensions.db.fields import UUIDField
+from uuidfield.fields import StringUUID
 import shortuuid
+import uuid  # @UnresolvedImport
+#from uuidfield.fields import UUIDField, StringUUID
+
 
 #from django_extensions.db.fields import UUIDField
 
@@ -13,7 +17,7 @@ import shortuuid
 class ShortUUID(StringUUID):
 
     def __unicode__(self):
-        return unicode(self.__str__())
+        return self.__str__()
 
     def __str__(self):
         return shortuuid.encode(self)
@@ -43,34 +47,25 @@ class ShortUUIDField(UUIDField):
 
     __metaclass__ = SubfieldBase
 
-    def get_internal_type(self):
-        return 'ShortUUIDField'
-
     def pre_save(self, model_instance, add):
         value = getattr(model_instance, self.attname, None)
-        if self.auto and add and not value:
-            uuid = self._create_uuid()
+#        if self.auto and add and not value:
+        if add and not value:
+            uuid = self.create_uuid()
             value = shortuuid.encode(uuid)
             setattr(model_instance, self.attname, value)
         return value
 
-    def to_python(self, value):
-        if not value:
-            return None
-        if isinstance(value, basestring):
-            return ShortUUID(shortuuid.decode(value).hex)
-        return value
-
-#    def contribute_to_class(self, cls, name):
-#        if self.primary_key:
-#            assert not cls._meta.has_auto_field, \
-#              "A model can't have more than one AutoField: %s %s %s; have %s" % \
-#               (self, cls, name, cls._meta.auto_field)
-#            super(ShortUUIDField, self).contribute_to_class(cls, name)
-#            cls._meta.has_auto_field = True
-#            cls._meta.auto_field = self
-#        else:
-#            super(ShortUUIDField, self).contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, name):
+        if self.primary_key:
+            assert not cls._meta.has_auto_field, \
+              "A model can't have more than one AutoField: %s %s %s; have %s" % \
+               (self, cls, name, cls._meta.auto_field)
+            super(ShortUUIDField, self).contribute_to_class(cls, name)
+            cls._meta.has_auto_field = True
+            cls._meta.auto_field = self
+        else:
+            super(ShortUUIDField, self).contribute_to_class(cls, name)
 
     def south_field_triple(self):
         "Returns a suitable description of this field for South."
