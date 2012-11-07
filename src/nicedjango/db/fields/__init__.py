@@ -44,7 +44,7 @@ class ShortUUIDField(UUIDField):
     __metaclass__ = SubfieldBase
 
     def get_internal_type(self):
-        return 'CharField'
+        return 'ShortUUIDField'
 
     def pre_save(self, model_instance, add):
         value = getattr(model_instance, self.attname, None)
@@ -71,6 +71,15 @@ class ShortUUIDField(UUIDField):
 #            cls._meta.auto_field = self
 #        else:
 #            super(ShortUUIDField, self).contribute_to_class(cls, name)
+
+    def south_field_triple(self):
+        "Returns a suitable description of this field for South."
+        # We'll just introspect the _actual_ field.
+        from south.modelsinspector import introspector
+        field_class = "django.db.models.fields.CharField"
+        args, kwargs = introspector(self)
+        # That's our definition!
+        return (field_class, args, kwargs)
 
 
 class HandlerField(CharField):
