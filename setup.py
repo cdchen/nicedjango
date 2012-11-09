@@ -41,6 +41,9 @@ setup(
         # -*- Extra requirements: -*-
         'django',
         'django-uuidfield',
+        'shortuuid',
+        'django_extensions',
+
     ] + django_extra_packages,
     setup_requires=[
         'sphinx',

@@ -50,22 +50,23 @@ class ShortUUIDField(UUIDField):
     def pre_save(self, model_instance, add):
         value = getattr(model_instance, self.attname, None)
 #        if self.auto and add and not value:
-        if add and not value:
+        if not value and (add or self.auto):
             uuid = self.create_uuid()
             value = shortuuid.encode(uuid)
             setattr(model_instance, self.attname, value)
         return value
 
     def contribute_to_class(self, cls, name):
-        if self.primary_key:
-            assert not cls._meta.has_auto_field, \
-              "A model can't have more than one AutoField: %s %s %s; have %s" % \
-               (self, cls, name, cls._meta.auto_field)
-            super(ShortUUIDField, self).contribute_to_class(cls, name)
-            cls._meta.has_auto_field = True
-            cls._meta.auto_field = self
-        else:
-            super(ShortUUIDField, self).contribute_to_class(cls, name)
+#        if self.primary_key:
+#            assert not cls._meta.has_auto_field, \
+#              "A model can't have more than one AutoField: %s %s %s; have %s" % \
+#               (self, cls, name, cls._meta.auto_field)
+#            super(ShortUUIDField, self).contribute_to_class(cls, name)
+#            cls._meta.has_auto_field = True
+#            cls._meta.auto_field = self
+#        else:
+#            super(ShortUUIDField, self).contribute_to_class(cls, name)
+        CharField.contribute_to_class(self, cls, name)
 
     def south_field_triple(self):
         "Returns a suitable description of this field for South."
