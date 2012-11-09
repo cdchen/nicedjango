@@ -1,29 +1,27 @@
-#*.pydevproject
-#.project
-.metadata
-bin/**
-tmp/**
-tmp/**/*
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.classpath
-.settings/
-.loadpath
-*.pyc
+*.py[co]
 
-# External tool builders
-.externalToolBuilders/
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
 
-# Locally stored "Eclipse launch configurations"
-*.launch
+# Installer logs
+pip-log.txt
 
-# CDT-specific
-.cproject
+# Unit test / coverage reports
+.coverage
+.tox
 
-# PDT-specific
-.buildpath
+#Translations
+*.mo
 
-src/nicedjango.egg-info
+#Mr Developer
+.mr.developer.cfg
