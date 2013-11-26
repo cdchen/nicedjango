@@ -43,10 +43,10 @@ setup(
         'django-uuidfield',
         'shortuuid',
         'django_extensions',
+        'sphinx',
 
     ] + django_extra_packages,
     setup_requires=[
-        'sphinx',
     ],
     entry_points="""
     """,
